@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".AdminActivity">
+
+    <androidx.appcompat.widget.SearchView
+        android:id="@+id/searchViewonAdmin"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:padding="10dp"
+        android:layout_margin="5dp"
+        android:elevation="50dp"
+        >
+
+    </androidx.appcompat.widget.SearchView>
+
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/admin_events"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="50dp">
+
+    </androidx.recyclerview.widget.RecyclerView>
+
+    <com.getbase.floatingactionbutton.FloatingActionsMenu
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        app:fab_addButtonColorNormal="#812C32"
+        app:fab_addButtonColorPressed="#512C81"
+        app:fab_addButtonPlusIconColor="#FFF"
+        app:fab_labelStyle="@style/customFAB"
+        android:elevation="30dp">
+
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:fab_addButtonColorNormal="#A82C3281"
+            app:fab_addButtonColorPressed="#512C81"
+            app:fab_size="mini"
+            app:fab_icon="@drawable/ic_delete"
+            android:id="@+id/action_delete"
+            app:fab_title="Delete Event"
+            />
+
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:fab_addButtonColorNormal="#A82C3281"
+            app:fab_addButtonColorPressed="#512C81"
+            app:fab_size="mini"
+            app:fab_icon="@drawable/ic_add"
+            android:id="@+id/action_add"
+            app:fab_title="Add Event"
+            />
+
+
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:fab_addButtonColorNormal="#A82C3281"
+            app:fab_addButtonColorPressed="#512C81"
+            app:fab_size="mini"
+            app:fab_icon="@drawable/ic_search"
+            android:id="@+id/action_search_all"
+            app:fab_title="Search"
+            />
+
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:fab_addButtonColorNormal="#A82C3281"
+            app:fab_addButtonColorPressed="#512C81"
+            app:fab_size="mini"
+            app:fab_icon="@drawable/ic_signout"
+            android:id="@+id/action_log"
+            app:fab_title="Sign Out"
+            />
+
+
+    </com.getbase.floatingactionbutton.FloatingActionsMenu>
+
+
+
+</RelativeLayout>

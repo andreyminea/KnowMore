@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "446852389053",
+    "firebase_url": "https://knlgsharing-f5321.firebaseio.com",
+    "project_id": "knlgsharing-f5321",
+    "storage_bucket": "knlgsharing-f5321.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:446852389053:android:ba0d4583b5346d3c",
+        "android_client_info": {
+          "package_name": "com.example.knlgsharing"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "446852389053-5mgpl6cf1shsje7fsbmogqrq7oqlv828.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.knlgsharing",
+            "certificate_hash": "d01ede88da5703ac369e076131f04872a24dd508"
+          }
+        },
+        {
+          "client_id": "446852389053-us5000l4nf0f7r08ks26nlmngguo0e24.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDYYyDkdFrZ51aQrVuoPBlAtT1G2muNXq4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "446852389053-us5000l4nf0f7r08ks26nlmngguo0e24.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

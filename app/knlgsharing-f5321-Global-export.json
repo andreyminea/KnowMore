@@ -1,0 +1,17 @@
+{
+  "Admin" : {
+    "Email" : "andreyminea@gmail.com"
+  },
+  "Posts":{
+  "Post1" : {
+    "Day" : "25.05.2019",
+    "EmailModerator" : "andreyminea@gmail.com",
+    "Image" : "https://media2.s-nbcnews.com/j/newscms/2018_20/1339477/puppy-cute-today-180515-main_a936531048fdb698635dd1b418abdee9.fit-760w.jpg",
+    "Moderator" : "Silviu Pasca",
+    "Participants" : "andreyminea@gmail.com,ioana.koala@gmail.com",
+    "SeatsLeft" : 15,
+    "Time" : "13:00",
+    "Title" : "Java"
+  }
+  }
+}
