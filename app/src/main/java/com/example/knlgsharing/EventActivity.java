@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -67,6 +68,9 @@ public class EventActivity extends AppCompatActivity {
         day.setText(post.getDay());
         time.setText(post.getTime());
         people = post.getSeatsLeft();
+
+        if(post.getSeatsLeft()==0)
+            Toast.makeText(getApplicationContext(),"No more seats left",Toast.LENGTH_SHORT).show();
 
         if(!post.getImage().isEmpty()) {
             Picasso.with(getApplicationContext()).load(post.getImage()).into(image);
@@ -160,4 +164,6 @@ public class EventActivity extends AppCompatActivity {
             plus.setVisibility(View.GONE);
 
     }
+
+
 }
