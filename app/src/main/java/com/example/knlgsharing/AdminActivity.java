@@ -1,11 +1,5 @@
 package com.example.knlgsharing;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.SearchView;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.content.Intent;
 import android.icu.text.DateFormat;
 import android.icu.text.SimpleDateFormat;
@@ -13,6 +7,12 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
@@ -123,15 +123,6 @@ public class AdminActivity extends AppCompatActivity implements FirebaseAdapter.
     protected void onStart() {
         super.onStart();
 
-//        if(isAdminMode)
-//        {
-//            Toast.makeText(getApplicationContext(),"Long Press on an event to delete", Toast.LENGTH_LONG).show();
-//        }
-//        else
-//        {
-//            Toast.makeText(getApplicationContext(),"Normal Mode", Toast.LENGTH_SHORT).show();
-//        }
-
         mDatabase.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -159,13 +150,6 @@ public class AdminActivity extends AppCompatActivity implements FirebaseAdapter.
 
             }
         });
-    }
-
-    @Override
-    protected void onPostResume() {
-        super.onPostResume();
-        if(mPosts.getAdapter()!=null)
-            mPosts.getAdapter().notifyDataSetChanged();
     }
 
     public void setUpSearch(Boolean ok)

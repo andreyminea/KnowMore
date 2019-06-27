@@ -1,7 +1,6 @@
 package com.example.knlgsharing;
 
 import android.content.Context;
-import android.content.Intent;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -9,14 +8,7 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
-
-import java.util.ArrayList;
 
 public class PostViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener
 {
@@ -77,6 +69,7 @@ public class PostViewHolder extends RecyclerView.ViewHolder implements View.OnCl
     @Override
     public void onClick(View v) {
 
+        Log.d("DEBUGG", "Onclick an item");
         onItemListener.ItemClick(getAdapterPosition());
 
     }
@@ -85,7 +78,7 @@ public class PostViewHolder extends RecyclerView.ViewHolder implements View.OnCl
     public boolean onLongClick(View v)
     {
         onItemListener.ItemLongClick(getAdapterPosition());
-        return false;
+        return true;
     }
 }
 

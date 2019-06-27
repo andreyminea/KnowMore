@@ -4,14 +4,8 @@ import android.content.Intent;
 import android.icu.text.DateFormat;
 import android.icu.text.SimpleDateFormat;
 import android.os.Bundle;
-
-import com.getbase.floatingactionbutton.FloatingActionButton;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+import android.util.Log;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,8 +14,13 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
-import android.view.View;
+import com.getbase.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -123,6 +122,72 @@ public class MainActivity extends AppCompatActivity implements FirebaseAdapter.O
 
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        mDatabase.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists())
+                {
+                    events = new ArrayList<>();
+                    AllEvents = new ArrayList<>();
+                    for(DataSnapshot ds: dataSnapshot.getChildren())
+                    {
+                        events.add(ds.getValue(Post.class));
+                        AllEvents.add(ds.getValue(Post.class));
+                    }
+                }
+
+                events = sortAfterDate(events);
+
+                if (selector.equals("Normal"))
+                    events = removePrevEvents(events);
+
+                setRecyclerView(events);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+
+    }
+
+    public void setUpSearch(Boolean ok)
+    {
+        if(ok==false)
+        {
+            search.setVisibility(View.VISIBLE);
+            toolbar.setVisibility(View.GONE);
+            isSearch=true;
+
+            search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                @Override
+                public boolean onQueryTextSubmit(String query) {
+                    return false;
+                }
+
+                @Override
+                public boolean onQueryTextChange(String s) {
+                    lookfor(s);
+                    return true;
+                }
+            });
+        }
+        else
+        {
+            isSearch=false;
+            search.setVisibility(View.GONE);
+            toolbar.setVisibility(View.VISIBLE);
+        }
+
+
+    }
+
     private void showPrevEvents(ArrayList<Post> ev)
     {
         message("There are "+ev.size()+" events");
@@ -168,72 +233,6 @@ public class MainActivity extends AppCompatActivity implements FirebaseAdapter.O
 
         AllEvents = results;
         setRecyclerView(results);
-
-    }
-
-    public void setUpSearch(Boolean ok)
-    {
-        if(ok==false)
-        {
-            search.setVisibility(View.VISIBLE);
-            toolbar.setVisibility(View.GONE);
-            isSearch=true;
-
-            search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-                @Override
-                public boolean onQueryTextSubmit(String query) {
-                    return false;
-                }
-
-                @Override
-                public boolean onQueryTextChange(String s) {
-                    lookfor(s);
-                    return true;
-                }
-            });
-        }
-        else
-        {
-            isSearch=false;
-            search.setVisibility(View.GONE);
-            toolbar.setVisibility(View.VISIBLE);
-        }
-
-
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-        mDatabase.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if(dataSnapshot.exists())
-                {
-                    events = new ArrayList<>();
-                    AllEvents = new ArrayList<>();
-                    for(DataSnapshot ds: dataSnapshot.getChildren())
-                    {
-                        events.add(ds.getValue(Post.class));
-                        AllEvents.add(ds.getValue(Post.class));
-                    }
-                }
-
-                events = sortAfterDate(events);
-
-                if (selector.equals("Normal"))
-                    events = removePrevEvents(events);
-
-                setRecyclerView(events);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
 
     }
 
@@ -301,6 +300,38 @@ public class MainActivity extends AppCompatActivity implements FirebaseAdapter.O
         mPost.setAdapter(adapter);
     }
 
+
+
+    class SortDate implements Comparator<Post>
+    {
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        public SortDate() {
+        }
+
+        @Override
+        public int compare(Post i, Post j)
+        {
+            try {
+                Date di = dateFormat.parse(i.getDay());
+                Date dj = dateFormat.parse(j.getDay());
+                if(di.before(dj))
+                    return -1;
+                else
+                    return 1;
+
+            }
+            catch (ParseException e){}
+            return 0;
+        }
+    }
+
+
+    private ArrayList<Post> sortAfterDate(ArrayList<Post> events)
+    {
+        Collections.sort(events, new SortDate());
+        return events;
+    }
+
     @Override
     public void ItemClick(final int position)
     {
@@ -337,38 +368,6 @@ public class MainActivity extends AppCompatActivity implements FirebaseAdapter.O
             }
         });
     }
-
-    class SortDate implements Comparator<Post>
-    {
-        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-        public SortDate() {
-        }
-
-        @Override
-        public int compare(Post i, Post j)
-        {
-            try {
-                Date di = dateFormat.parse(i.getDay());
-                Date dj = dateFormat.parse(j.getDay());
-                if(di.before(dj))
-                    return -1;
-                else
-                    return 1;
-
-            }
-            catch (ParseException e){}
-            return 0;
-        }
-    }
-
-
-    private ArrayList<Post> sortAfterDate(ArrayList<Post> events)
-    {
-        Collections.sort(events, new SortDate());
-        return events;
-    }
-
-
     
     
 }
