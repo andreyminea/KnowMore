@@ -1,14 +1,15 @@
 package com.example.knlgsharing;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
@@ -17,9 +18,10 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Picasso;
 
-import java.sql.Time;
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class EventActivity extends AppCompatActivity {
 
@@ -36,7 +38,9 @@ public class EventActivity extends AppCompatActivity {
     String userEmail;
     String adminEmail;
 
-    private int people;
+    private Post post;
+
+    private Long people;
 
 
     @Override
@@ -53,16 +57,29 @@ public class EventActivity extends AppCompatActivity {
         back = findViewById(R.id.back_btn);
         plus = findViewById(R.id.plus_btn);
 
-        final Post post;
+
         Intent intent = getIntent();
-        post = (Post) intent.getSerializableExtra("position");
+        Bundle bundle = intent.getExtras();
+        post = (Post) bundle.getSerializable("position");
 
         title.setText(post.getTitle());
         moderator.setText(post.getModerator());
         description.setText(post.getDescription());
         day.setText(post.getDay());
         time.setText(post.getTime());
-        people = Integer.getInteger(post.getSeatsLeft().toString());
+        people = post.getSeatsLeft();
+
+        if(post.getSeatsLeft()==0)
+            Toast.makeText(getApplicationContext(),"No more seats left",Toast.LENGTH_SHORT).show();
+
+        if(!post.getImage().isEmpty()) {
+            Picasso.with(getApplicationContext()).load(post.getImage()).into(image);
+            image.setVisibility(View.VISIBLE);
+        }
+        else
+            image.setVisibility(View.GONE);
+
+        Log.d("DEBUGG",""+post.getDay());
 
         ref = FirebaseDatabase.getInstance().getReference().child("Global/Posts");
 
@@ -73,7 +90,7 @@ public class EventActivity extends AppCompatActivity {
                 {
                     for(DataSnapshot ds: dataSnapshot.getChildren())
                     {
-                        if(ds.getValue(Post.class).equals(post))
+                        if(ds.getValue(Post.class).equalsPost(post))
                             eventRef = ds.getRef();
                     }
                 }
@@ -119,14 +136,26 @@ public class EventActivity extends AppCompatActivity {
             }
         });
 
-        if(people>0) {
+        Boolean ok = false;
+        String[] emails;
+        emails = post.getParticipants().split(",");
+        for (String s : emails) {
+            if (userEmail.equals(s)) {
+                ok = true;
+                break;
+            }
+        }
+        if(people>0 && !ok ) {
             plus.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    post.setParticipants(Integer.toString(people - 1));
+                    post.setSeatsLeft((people - 1));
                     String participants = post.getParticipants().concat(","+userEmail);
                     post.setParticipants(participants);
-                    eventRef.child(eventRef.getKey()).setValue(post);
+//                    Map<String, Post> map = new HashMap<>();
+//                    map.put(eventRef.getKey().toString(), post);
+                    Log.d("DEBUGG", eventRef.getKey().toString());
+                    eventRef.setValue(post);
                     plus.setVisibility(View.GONE);
                 }
             });
@@ -135,4 +164,6 @@ public class EventActivity extends AppCompatActivity {
             plus.setVisibility(View.GONE);
 
     }
+
+
 }

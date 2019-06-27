@@ -103,13 +103,13 @@ public class Post implements Serializable
         Participants = participants;
     }
 
-    public Boolean equals(Post p)
+    public Boolean equalsPost(Post p)
     {
-        if(Title.equals(p.getTitle())
-                && Description.equals(p.getDescription())
-                && Time.equals(p.getTime())
-                && Day.equals(p.getDay())
-                && SeatsLeft.equals(p.getSeatsLeft())
+        if(Title.equals(p.getTitle()) &&
+                Description.equals(p.getDescription()) &&
+                Time.equals(p.getTime()) &&
+                Day.equals(p.getDay()) &&
+                SeatsLeft.equals(p.getSeatsLeft())
         )
         {
             return true;

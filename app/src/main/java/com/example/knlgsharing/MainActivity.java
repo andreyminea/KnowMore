@@ -4,6 +4,15 @@ import android.content.Intent;
 import android.icu.text.DateFormat;
 import android.icu.text.SimpleDateFormat;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
@@ -13,16 +22,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.SearchView;
-import androidx.appcompat.widget.Toolbar;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
-import android.util.Log;
-import android.view.View;
-
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -30,7 +29,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 
-public class MainActivity extends AppCompatActivity implements FirebaseAdapter.OnItemListener {
+public class MainActivity extends AppCompatActivity implements EventsAdapter.OnItemListener {
 
     private RecyclerView mPost;
     private DatabaseReference mDatabase;
@@ -38,8 +37,7 @@ public class MainActivity extends AppCompatActivity implements FirebaseAdapter.O
     LinearLayoutManager linearLayoutManager;
     ArrayList<Post> events;
     ArrayList<Post> AllEvents;
-    FirebaseAdapter adapter;
-
+    EventsAdapter adapter;
 
     SearchView search = null;
     Toolbar toolbar;
@@ -66,13 +64,11 @@ public class MainActivity extends AppCompatActivity implements FirebaseAdapter.O
             @Override
             public void onClick(View v) {
                 // display prev events
-                if(!isPrevEvents) {
+                if (!isPrevEvents) {
                     isPrevEvents = true;
                     showPrevEvents(AllEvents);
-                }
-                else
-                {
-                    isPrevEvents=false;
+                } else {
+                    isPrevEvents = false;
                     onStart();
                 }
 
@@ -116,89 +112,9 @@ public class MainActivity extends AppCompatActivity implements FirebaseAdapter.O
         // the last is displayed first
         linearLayoutManager.setReverseLayout(true);
         linearLayoutManager.setStackFromEnd(true);
-
         mPost.setHasFixedSize(true);
+
         mPost.setLayoutManager(linearLayoutManager);
-        mPost.setAdapter(adapter);
-
-    }
-
-    private void showPrevEvents(ArrayList<Post> ev)
-    {
-        message("There are "+ev.size()+" events");
-        String currentEmail = FirebaseAuth.getInstance().getCurrentUser().getEmail();
-
-        ArrayList<Post> results = new ArrayList<>();
-
-        for(Post object:ev)
-        {
-            String[] emails ;
-            emails = object.getParticipants().split(",");
-            message("//////////////////////////");
-            for(String s:emails)
-            {
-                message(s);
-                if(currentEmail.equals(s))
-                {
-                    results.add(object);
-                }
-            }
-
-        }
-
-        Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.DAY_OF_MONTH, -1);
-        Date currentDate = calendar.getTime();
-        Date eventDate;
-        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-
-        for(int i=0; i<results.size(); i++)
-        {
-            Post object = results.get(i);
-            try {
-                eventDate = dateFormat.parse(object.getDay());
-                if(!currentDate.after(eventDate)) {
-                    results.remove(object);
-                    i=-1;
-                }
-
-            }catch(ParseException e)
-            {}
-        }
-
-        AllEvents = results;
-        setRecyclerView(results);
-
-    }
-
-    public void setUpSearch(Boolean ok)
-    {
-        if(ok==false)
-        {
-            search.setVisibility(View.VISIBLE);
-            toolbar.setVisibility(View.GONE);
-            isSearch=true;
-
-            search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-                @Override
-                public boolean onQueryTextSubmit(String query) {
-                    return false;
-                }
-
-                @Override
-                public boolean onQueryTextChange(String s) {
-                    lookfor(s);
-                    return true;
-                }
-            });
-        }
-        else
-        {
-            isSearch=false;
-            search.setVisibility(View.GONE);
-            toolbar.setVisibility(View.VISIBLE);
-        }
-
 
     }
 
@@ -209,12 +125,10 @@ public class MainActivity extends AppCompatActivity implements FirebaseAdapter.O
         mDatabase.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if(dataSnapshot.exists())
-                {
+                if (dataSnapshot.exists()) {
                     events = new ArrayList<>();
                     AllEvents = new ArrayList<>();
-                    for(DataSnapshot ds: dataSnapshot.getChildren())
-                    {
+                    for (DataSnapshot ds : dataSnapshot.getChildren()) {
                         events.add(ds.getValue(Post.class));
                         AllEvents.add(ds.getValue(Post.class));
                     }
@@ -237,56 +151,115 @@ public class MainActivity extends AppCompatActivity implements FirebaseAdapter.O
 
     }
 
-    private ArrayList<Post> removePrevEvents(ArrayList<Post> events)
-    {
+    public void setUpSearch(Boolean ok) {
+        if (ok == false) {
+            search.setVisibility(View.VISIBLE);
+            toolbar.setVisibility(View.GONE);
+            isSearch = true;
+
+            search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                @Override
+                public boolean onQueryTextSubmit(String query) {
+                    return false;
+                }
+
+                @Override
+                public boolean onQueryTextChange(String s) {
+                    lookfor(s);
+                    return true;
+                }
+            });
+        } else {
+            isSearch = false;
+            search.setVisibility(View.GONE);
+            toolbar.setVisibility(View.VISIBLE);
+        }
+
+
+    }
+
+    private void showPrevEvents(ArrayList<Post> ev) {
+        message("There are " + ev.size() + " events");
+        String currentEmail = FirebaseAuth.getInstance().getCurrentUser().getEmail();
+
+        ArrayList<Post> results = new ArrayList<>();
+
+        for (Post object : ev) {
+            String[] emails;
+            emails = object.getParticipants().split(",");
+            message("//////////////////////////");
+            for (String s : emails) {
+                message(s);
+                if (currentEmail.equals(s)) {
+                    results.add(object);
+                }
+            }
+
+        }
+
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DAY_OF_MONTH, -1);
         Date currentDate = calendar.getTime();
         Date eventDate;
         DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 
-        for(int i=0; i<events.size(); i++)
-        {
+        for (int i = 0; i < results.size(); i++) {
+            Post object = results.get(i);
+            try {
+                eventDate = dateFormat.parse(object.getDay());
+                if (!currentDate.after(eventDate)) {
+                    results.remove(object);
+                    i = -1;
+                }
+
+            } catch (ParseException e) {
+            }
+        }
+
+        AllEvents = results;
+        setRecyclerView(results);
+
+    }
+
+    private ArrayList<Post> removePrevEvents(ArrayList<Post> events) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DAY_OF_MONTH, -1);
+        Date currentDate = calendar.getTime();
+        Date eventDate;
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+
+        for (int i = 0; i < events.size(); i++) {
             Post object = events.get(i);
             try {
                 eventDate = dateFormat.parse(object.getDay());
-                if(currentDate.after(eventDate)) {
+                if (currentDate.after(eventDate)) {
                     events.remove(object);
-                    i=-1;
+                    i = -1;
                 }
 
-            }catch(ParseException e)
-            {}
+            } catch (ParseException e) {
+            }
         }
 
         return events;
     }
 
-    private void message(String s)
-    {
+    private void message(String s) {
         Log.d("DEBUGGG", "here " + s);
     }
 
-    private void lookfor(String s)
-    {
+    private void lookfor(String s) {
         ArrayList<Post> results = new ArrayList<>();
 
-        if(!isPrevEvents)
-        {
-            for(Post object : events)
-            {
-                if(object.getTitle().toLowerCase().contains(s.toLowerCase()))
-                {
+        if (!isPrevEvents) {
+            for (Post object : events) {
+                if (object.getTitle().toLowerCase().contains(s.toLowerCase())) {
                     results.add(object);
                 }
             }
-        }
-        else
-        {
-            for(Post object : AllEvents)
-            {
-                if(object.getTitle().toLowerCase().contains(s.toLowerCase()))
-                {
+        } else {
+            for (Post object : AllEvents) {
+                if (object.getTitle().toLowerCase().contains(s.toLowerCase())) {
                     results.add(object);
                 }
             }
@@ -295,19 +268,50 @@ public class MainActivity extends AppCompatActivity implements FirebaseAdapter.O
         setRecyclerView(results);
     }
 
-    private void setRecyclerView(ArrayList<Post> arrayList)
-    {
-        FirebaseAdapter adapter = new FirebaseAdapter("Normal", getApplicationContext(), arrayList, this);
+    private void setRecyclerView(ArrayList<Post> arrayList) {
+        EventsAdapter adapter = new EventsAdapter(getApplicationContext(), arrayList, this);
         mPost.setAdapter(adapter);
     }
 
+
+    class SortDate implements Comparator<Post> {
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+
+        public SortDate() {
+        }
+
+        @Override
+        public int compare(Post i, Post j) {
+            try {
+                Date di = dateFormat.parse(i.getDay());
+                Date dj = dateFormat.parse(j.getDay());
+                if (di.before(dj))
+                    return -1;
+                else
+                    return 1;
+
+            } catch (ParseException e) {
+            }
+            return 0;
+        }
+    }
+
+
+    private ArrayList<Post> sortAfterDate(ArrayList<Post> events) {
+        Collections.sort(events, new SortDate());
+        return events;
+    }
+
     @Override
-    public void ItemClick(final int position)
-    {
-        Log.d("DEBUGG CLICK" , ""+position);
+    public void ItemClick(final int position) {
+        Log.d("DEBUGG CLICK", "" + position);
 
         Intent intent = new Intent(MainActivity.this, EventActivity.class);
-        intent.putExtra("position", events.get(position) + "");
+
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("position", events.get(position));
+
+        intent.putExtras(bundle);
 
         Log.d("DEBUGGG", events.get(position).getEmailModerator());
 
@@ -315,60 +319,6 @@ public class MainActivity extends AppCompatActivity implements FirebaseAdapter.O
 
     }
 
-    @Override
-    public void ItemLongClick(final int position) {
-
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Global/Posts");
-        ref.addListenerForSingleValueEvent(new ValueEventListener() {
-
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                int j=0;
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    if(position==j) {
-                        snapshot.getRef().removeValue();
-                        break;
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-            }
-        });
-    }
-
-    class SortDate implements Comparator<Post>
-    {
-        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-        public SortDate() {
-        }
-
-        @Override
-        public int compare(Post i, Post j)
-        {
-            try {
-                Date di = dateFormat.parse(i.getDay());
-                Date dj = dateFormat.parse(j.getDay());
-                if(di.before(dj))
-                    return -1;
-                else
-                    return 1;
-
-            }
-            catch (ParseException e){}
-            return 0;
-        }
-    }
 
 
-    private ArrayList<Post> sortAfterDate(ArrayList<Post> events)
-    {
-        Collections.sort(events, new SortDate());
-        return events;
-    }
-
-
-    
-    
 }
