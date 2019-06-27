@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.icu.text.DateFormat;
 import android.icu.text.SimpleDateFormat;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -215,11 +216,37 @@ public class AdminActivity extends AppCompatActivity implements FirebaseAdapter.
     @Override
     public void ItemClick(int position) {
 
+        Log.d("DEBUGG CLICK" , ""+position);
+
+        Intent intent = new Intent(AdminActivity.this, EventActivity.class);
+        intent.putExtra("position", events.get(position) + "");
+
+        Log.d("DEBUGGG", events.get(position).getEmailModerator());
+
+        startActivity(intent);
     }
 
     @Override
-    public void ItemLongClick(int position) {
+    public void ItemLongClick(final int position) {
 
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Global/Posts");
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                int j=0;
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    if(position==j) {
+                        snapshot.getRef().removeValue();
+                        break;
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
     }
 
 
