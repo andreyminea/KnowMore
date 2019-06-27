@@ -1,6 +1,7 @@
 package com.example.knlgsharing;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,14 +11,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
-public class FirebaseAdapter extends RecyclerView.Adapter<PostViewHolder>
+public class EventsAdapter extends RecyclerView.Adapter<PostViewHolder>
 {
     ArrayList<Post> events;
     String selector;
     Context mcontext;
     OnItemListener onItemListener;
 
-    public FirebaseAdapter(String selector, Context context, ArrayList<Post> posts, OnItemListener onItemListener)
+    public EventsAdapter(Context context, ArrayList<Post> posts, OnItemListener onItemListener)
     {
         mcontext = context;
         events = posts;
@@ -27,9 +28,9 @@ public class FirebaseAdapter extends RecyclerView.Adapter<PostViewHolder>
 
     @NonNull
     @Override
-    public PostViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public PostViewHolder onCreateViewHolder(@NonNull final ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.session_row, parent, false);
-        PostViewHolder viewHolder = new PostViewHolder(view,selector,onItemListener);
+        final PostViewHolder viewHolder = new PostViewHolder(view,onItemListener);
         return viewHolder;
     }
 
@@ -51,7 +52,6 @@ public class FirebaseAdapter extends RecyclerView.Adapter<PostViewHolder>
     public interface OnItemListener
     {
         void ItemClick(int position);
-        void ItemLongClick(int position);
     }
 
 }

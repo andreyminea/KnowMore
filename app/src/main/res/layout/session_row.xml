@@ -6,8 +6,8 @@
     android:orientation="vertical"
     app:cardCornerRadius="12dp"
     android:elevation="90dp"
-    android:focusable="false"
     android:focusableInTouchMode="false"
+    android:longClickable="true"
     android:layout_margin="10dp">
 
     <LinearLayout
@@ -15,10 +15,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:background="#E6DBDBDB"
-        android:layout_margin="7dp"
-        android:longClickable="true">
-
-
+        android:layout_margin="7dp">
 
     <ImageView
         android:id="@+id/post_image"

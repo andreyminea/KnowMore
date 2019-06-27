@@ -10,22 +10,19 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.squareup.picasso.Picasso;
 
-public class PostViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener
+public class PostViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener
 {
     View view;
     Context mContext;
-    FirebaseAdapter.OnItemListener onItemListener;
+    EventsAdapter.OnItemListener onItemListener;
 
-    public PostViewHolder(View itemView, String selection, FirebaseAdapter.OnItemListener onItemListener)
+    public PostViewHolder(View itemView, EventsAdapter.OnItemListener onItemListener)
     {
         super(itemView);
         view = itemView;
         mContext = itemView.getContext();
         this.onItemListener = onItemListener;
-        if(selection.equals("Normal"))
-            itemView.setOnClickListener(PostViewHolder.this);
-        else
-            itemView.setOnLongClickListener(PostViewHolder.this);
+        itemView.setOnClickListener(PostViewHolder.this);
 
     }
 
@@ -74,11 +71,5 @@ public class PostViewHolder extends RecyclerView.ViewHolder implements View.OnCl
 
     }
 
-    @Override
-    public boolean onLongClick(View v)
-    {
-        onItemListener.ItemLongClick(getAdapterPosition());
-        return true;
-    }
 }
 

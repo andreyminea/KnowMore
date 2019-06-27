@@ -28,7 +28,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 
-public class AdminActivity extends AppCompatActivity implements FirebaseAdapter.OnItemListener {
+public class AdminActivity extends AppCompatActivity implements EventsAdapter.OnItemListener {
 
     LinearLayoutManager linearLayoutManager;
     DatabaseReference mDatabase;
@@ -137,7 +137,7 @@ public class AdminActivity extends AppCompatActivity implements FirebaseAdapter.
 
                 events = sortAfterDate(events);
 
-                FirebaseAdapter adapter;
+                EventsAdapter adapter;
                 if (selector.equals("Normal"))
                     setRecyclerView(events);
                 else
@@ -198,39 +198,46 @@ public class AdminActivity extends AppCompatActivity implements FirebaseAdapter.
     }
 
     @Override
-    public void ItemClick(int position) {
+    public void ItemClick(final int position) {
 
-        Log.d("DEBUGG CLICK" , ""+position);
+        if(selector.equals("Normal")) {
+            Log.d("DEBUGG CLICK", "" + position);
 
-        Intent intent = new Intent(AdminActivity.this, EventActivity.class);
-        intent.putExtra("position", events.get(position) + "");
+            Intent intent = new Intent(AdminActivity.this, EventActivity.class);
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("position", events.get(position));
 
-        Log.d("DEBUGGG", events.get(position).getEmailModerator());
+            intent.putExtras(bundle);
 
-        startActivity(intent);
-    }
+            Log.d("DEBUGGG", events.get(position).getEmailModerator());
 
-    @Override
-    public void ItemLongClick(final int position) {
+            startActivity(intent);
+        }
+        else {
 
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Global/Posts");
-        ref.addListenerForSingleValueEvent(new ValueEventListener() {
 
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                int j=0;
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    if(position==j) {
-                        snapshot.getRef().removeValue();
-                        break;
+            DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Global/Posts");
+            ref.addListenerForSingleValueEvent(new ValueEventListener() {
+
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    int j = 0;
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        Log.d("DEBUGG","HEI sterge te" + position);
+                        if (position == j) {
+                            Log.d("DEBUGG",snapshot.toString());
+                            snapshot.getRef().removeValue();
+                            break;
+                        }
+                        j++;
                     }
                 }
-            }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-            }
-        });
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                }
+            });
+        }
     }
 
 
@@ -265,7 +272,7 @@ public class AdminActivity extends AppCompatActivity implements FirebaseAdapter.
 
     private void setRecyclerView(ArrayList<Post> arrayList)
     {
-        FirebaseAdapter adapter = new FirebaseAdapter(selector, getApplicationContext(), arrayList, this);
+        EventsAdapter adapter = new EventsAdapter(getApplicationContext(), arrayList, this);
         mPosts.setAdapter(adapter);
     }
 

@@ -27,7 +27,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:textAlignment="center"
-        android:textSize="30dp"
+        android:textSize="20dp"
         android:textColor="#FFF"
         android:text="Event Title"
         android:translationZ="100dp"/>
@@ -36,6 +36,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/titleBar">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
     <ImageView
         android:id="@+id/eventImage"
@@ -47,7 +50,7 @@
     <TextView
         android:id="@+id/eventModerator"
         android:layout_below="@+id/eventImage"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="20dp"
         android:textSize="15dp"
@@ -66,17 +69,16 @@
     <TextView
         android:id="@+id/eventTime"
         android:layout_below="@+id/eventDescription"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="20dp"
         android:textSize="15dp"
-        android:layout_alignParentRight="false"
         android:textColor="#111"/>
 
     <TextView
         android:id="@+id/eventDay"
         android:layout_below="@+id/eventDescription"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="20dp"
         android:textSize="15dp"
@@ -106,6 +108,8 @@
         android:text="Participate"
         android:textColor="#FFF"
         android:backgroundTint="#812C5C"/>
+        </RelativeLayout>
+
 
     </ScrollView>
 
