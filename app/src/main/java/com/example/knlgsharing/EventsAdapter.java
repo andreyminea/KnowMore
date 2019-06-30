@@ -14,7 +14,6 @@ import java.util.ArrayList;
 public class EventsAdapter extends RecyclerView.Adapter<PostViewHolder>
 {
     ArrayList<Post> events;
-    String selector;
     Context mcontext;
     OnItemListener onItemListener;
 
@@ -22,7 +21,7 @@ public class EventsAdapter extends RecyclerView.Adapter<PostViewHolder>
     {
         mcontext = context;
         events = posts;
-        this.selector = selector;
+
         this.onItemListener = onItemListener;
     }
 

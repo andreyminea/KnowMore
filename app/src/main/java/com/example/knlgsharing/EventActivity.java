@@ -10,6 +10,8 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
@@ -20,6 +22,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,14 +36,20 @@ public class EventActivity extends AppCompatActivity {
     ImageView image;
     MaterialButton back;
     MaterialButton plus;
+
+    DatabaseReference commentRef;
     DatabaseReference ref;
     DatabaseReference eventRef;
+
     String userEmail;
     String adminEmail;
+    String name;
 
     private Post post;
 
     private Long people;
+
+    RecyclerView recyclerView;
 
 
     @Override
@@ -57,6 +66,8 @@ public class EventActivity extends AppCompatActivity {
         back = findViewById(R.id.back_btn);
         plus = findViewById(R.id.plus_btn);
 
+        recyclerView = findViewById(R.id.comment_section);
+
 
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
@@ -69,29 +80,26 @@ public class EventActivity extends AppCompatActivity {
         time.setText(post.getTime());
         people = post.getSeatsLeft();
 
-        if(post.getSeatsLeft()==0)
-            Toast.makeText(getApplicationContext(),"No more seats left",Toast.LENGTH_SHORT).show();
+        if (post.getSeatsLeft() == 0)
+            Toast.makeText(getApplicationContext(), "No more seats left", Toast.LENGTH_SHORT).show();
 
-        if(!post.getImage().isEmpty()) {
+        if (!post.getImage().isEmpty()) {
             Picasso.with(getApplicationContext()).load(post.getImage()).into(image);
             image.setVisibility(View.VISIBLE);
-        }
-        else
+        } else
             image.setVisibility(View.GONE);
 
-        Log.d("DEBUGG",""+post.getDay());
+        Log.d("DEBUGG", "" + post.getDay());
 
         ref = FirebaseDatabase.getInstance().getReference().child("Global/Posts");
-
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if(dataSnapshot.exists())
-                {
-                    for(DataSnapshot ds: dataSnapshot.getChildren())
-                    {
-                        if(ds.getValue(Post.class).equalsPost(post))
+                if (dataSnapshot.exists()) {
+                    for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                        if (ds.getValue(Post.class).equalsPost(post)) {
                             eventRef = ds.getRef();
+                        }
                     }
                 }
             }
@@ -102,10 +110,28 @@ public class EventActivity extends AppCompatActivity {
             }
         });
 
+        ref = FirebaseDatabase.getInstance().getReference().child("Global/Comments");
+        ref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists())
+                    for (DataSnapshot ds : dataSnapshot.getChildren())
+                        if (ds.getKey().equals(eventRef.getKey())) {
+                            commentRef = ds.getRef();
+                            getComments(commentRef);
+                            break;
+                        }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
         FirebaseAuth auth = FirebaseAuth.getInstance();
+        name = auth.getCurrentUser().getDisplayName();
         userEmail = auth.getCurrentUser().getEmail();
-
-
 
         DatabaseReference db = FirebaseDatabase.getInstance().getReference()
                 .child("Global").child("Admin").child("Email");
@@ -114,28 +140,32 @@ public class EventActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 adminEmail = dataSnapshot.getValue(String.class);
+                setButton();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
 
             }
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                }
-            });
+        });
 
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!adminEmail.equals(userEmail)) {
+                if (!adminEmail.equals(userEmail)) {
                     Intent intent = new Intent(EventActivity.this, MainActivity.class);
                     startActivity(intent);
-                }
-                else {
+                } else {
                     Intent intent = new Intent(EventActivity.this, AdminActivity.class);
                     startActivity(intent);
                 }
             }
         });
 
+    }
+
+    private void setButton()
+    {
         Boolean ok = false;
         String[] emails;
         emails = post.getParticipants().split(",");
@@ -145,25 +175,87 @@ public class EventActivity extends AppCompatActivity {
                 break;
             }
         }
-        if(people>0 && !ok ) {
+        Log.d("DEBUGG", "moderator "+post.getEmailModerator());
+        Log.d("DEBUGG", "admin "+adminEmail);
+        Log.d("DEBUGG", "user "+userEmail);
+
+        if (userEmail.equals(post.getEmailModerator()) || userEmail.equals(adminEmail)) {
+            plus.setText("Edit");
+            plus.setVisibility(View.VISIBLE);
+
             plus.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    post.setSeatsLeft((people - 1));
-                    String participants = post.getParticipants().concat(","+userEmail);
-                    post.setParticipants(participants);
-//                    Map<String, Post> map = new HashMap<>();
-//                    map.put(eventRef.getKey().toString(), post);
-                    Log.d("DEBUGG", eventRef.getKey().toString());
-                    eventRef.setValue(post);
-                    plus.setVisibility(View.GONE);
+                    Intent intent = new Intent(EventActivity.this, AddActivity.class);
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable("dates", post);
+                    bundle.putString("ref", eventRef.toString());
+                    intent.putExtras(bundle);
+
+                    startActivity(intent);
                 }
             });
+        } else {
+            if (people > 0 && !ok)
+            {
+                plus.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        post.setSeatsLeft((people - 1));
+                        String participants = post.getParticipants().concat("," + userEmail);
+                        post.setParticipants(participants);
+                        eventRef.setValue(post);
+                        plus.setVisibility(View.GONE);
+                    }
+                });
+            } else
+                plus.setVisibility(View.GONE);
         }
-        else
-            plus.setVisibility(View.GONE);
-
     }
 
 
+    public void setEverything(ArrayList<Comment> list) {
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext());
+
+        // the last is displayed first
+        linearLayoutManager.setReverseLayout(false);
+        linearLayoutManager.setStackFromEnd(false);
+
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(linearLayoutManager);
+
+        CommentAdapter adapter = new CommentAdapter(list, name, getApplicationContext());
+        Log.d("DEBUGG", "" + adapter.getItemCount());
+        recyclerView.setAdapter(adapter);
+    }
+
+
+    private void getComments(DatabaseReference ref) {
+        final ArrayList<Comment> results = new ArrayList<>();
+
+        ref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+
+                    String name = dataSnapshot.child("name").getValue(String.class);
+                    String q = dataSnapshot.child("question").getValue(String.class);
+                    ArrayList<Answer> answers = new ArrayList<>();
+                    for (DataSnapshot ds : dataSnapshot.child("Answers").getChildren()) {
+                        Answer a = ds.getValue(Answer.class);
+                        answers.add(a);
+                    }
+                    Comment c = new Comment(name, q, answers);
+                    results.add(c);
+
+                }
+                setEverything(results);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
 }
