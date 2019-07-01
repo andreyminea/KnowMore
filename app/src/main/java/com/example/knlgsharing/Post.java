@@ -13,9 +13,18 @@ public class Post implements Serializable
     private Long SeatsLeft;
     private String EmailModerator;
     private String Participants;
+    private String Link;
+
+    public String getLink() {
+        return Link;
+    }
+
+    public void setLink(String link) {
+        Link = link;
+    }
 
     public Post(String title, String moderator, String day, String time, String image,
-                String description, Long seatsLeft, String emailModerator, String participants) {
+                String description, Long seatsLeft, String emailModerator, String participants, String link) {
 
         Title = title;
         Moderator = moderator;
@@ -26,6 +35,7 @@ public class Post implements Serializable
         SeatsLeft = seatsLeft;
         EmailModerator = emailModerator;
         Participants = participants;
+        Link = link;
     }
 
     public Post()

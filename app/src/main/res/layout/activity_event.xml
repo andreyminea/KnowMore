@@ -58,9 +58,19 @@
         android:layout_alignParentRight="true"
         android:textColor="#111"/>
 
+            <TextView
+                android:id="@+id/eventParticipants"
+                android:layout_below="@+id/eventModerator"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:textSize="15dp"
+                android:layout_alignParentRight="true"
+                android:textColor="#111"/>
+
     <TextView
         android:id="@+id/eventDescription"
-        android:layout_below="@+id/eventModerator"
+        android:layout_below="@+id/eventParticipants"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="20dp"
@@ -96,6 +106,18 @@
         android:layout_marginTop="40dp"
         android:text="Back"
         android:backgroundTint="#81502C"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/link_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/eventDay"
+                android:layout_centerInParent="true"
+                android:layout_marginStart="30dp"
+                android:layout_marginEnd="30dp"
+                android:layout_marginTop="40dp"
+                android:text="Link"
+                android:backgroundTint="#812C5C"/>
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/plus_btn"

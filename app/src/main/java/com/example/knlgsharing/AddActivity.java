@@ -24,6 +24,7 @@ public class AddActivity extends AppCompatActivity {
     TextInputEditText seats;
     TextInputEditText date;
     TextInputEditText time;
+    TextInputEditText link;
 
     Post post;
     DatabaseReference ref;
@@ -54,6 +55,7 @@ public class AddActivity extends AppCompatActivity {
         seats = findViewById(R.id.field_seats);
         date = findViewById(R.id.field_date);
         time = findViewById(R.id.field_time);
+        link = findViewById(R.id.field_link);
 
         cancel = findViewById(R.id.cancel_btn);
         add = findViewById(R.id.save_btn);
@@ -107,7 +109,8 @@ public class AddActivity extends AppCompatActivity {
                 description.getText().toString(),
                 new Long(Integer.parseInt(seats.getText().toString())),
                 emailModerator.getText().toString(),
-                "");
+                "",
+                link.getText().toString());
 
         if(haveData)
         {

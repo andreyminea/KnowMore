@@ -215,7 +215,6 @@ public class MainActivity extends AppCompatActivity implements EventsAdapter.OnI
             } catch (ParseException e) {
             }
         }
-
         AllEvents = results;
         setRecyclerView(results);
 
@@ -264,12 +263,11 @@ public class MainActivity extends AppCompatActivity implements EventsAdapter.OnI
                 }
             }
         }
-
         setRecyclerView(results);
     }
 
     private void setRecyclerView(ArrayList<Post> arrayList) {
-        EventsAdapter adapter = new EventsAdapter(getApplicationContext(), arrayList, this);
+        adapter = new EventsAdapter(getApplicationContext(), arrayList, this);
         mPost.setAdapter(adapter);
     }
 
@@ -309,11 +307,11 @@ public class MainActivity extends AppCompatActivity implements EventsAdapter.OnI
         Intent intent = new Intent(MainActivity.this, EventActivity.class);
 
         Bundle bundle = new Bundle();
-        bundle.putSerializable("position", events.get(position));
+        bundle.putSerializable("position", adapter.getArray().get(position));
 
         intent.putExtras(bundle);
 
-        Log.d("DEBUGGG", events.get(position).getEmailModerator());
+        Log.d("DEBUGGG", adapter.getArray().get(position).getEmailModerator());
 
         startActivity(intent);
 

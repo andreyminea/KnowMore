@@ -1,6 +1,7 @@
 package com.example.knlgsharing;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -36,8 +37,10 @@ public class EventActivity extends AppCompatActivity {
     TextView day;
     TextView time;
     ImageView image;
+    TextView participants;
     MaterialButton back;
     MaterialButton plus;
+    MaterialButton link;
 
     ImageButton sendComment;
     EditText textComment;
@@ -63,6 +66,7 @@ public class EventActivity extends AppCompatActivity {
         setContentView(R.layout.activity_event);
 
         title = findViewById(R.id.eventTitle);
+        participants = findViewById(R.id.eventParticipants);
         moderator = findViewById(R.id.eventModerator);
         description = findViewById(R.id.eventDescription);
         day = findViewById(R.id.eventDay);
@@ -70,6 +74,7 @@ public class EventActivity extends AppCompatActivity {
         image = findViewById(R.id.eventImage);
         back = findViewById(R.id.back_btn);
         plus = findViewById(R.id.plus_btn);
+        link = findViewById(R.id.link_btn);
         sendComment = findViewById(R.id.sendComment);
         textComment = findViewById(R.id.newComment);
 
@@ -84,6 +89,7 @@ public class EventActivity extends AppCompatActivity {
         description.setText(post.getDescription());
         day.setText(post.getDay());
         time.setText(post.getTime());
+        participants.setText("Left: " + (post.getSeatsLeft().toString()));
         people = post.getSeatsLeft();
 
         if (post.getSeatsLeft() == 0)
@@ -165,6 +171,15 @@ public class EventActivity extends AppCompatActivity {
             }
         });
 
+        link.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Uri uri = Uri.parse(post.getLink());
+                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                startActivity(intent);
+            }
+        });
+
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -215,10 +230,11 @@ public class EventActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         post.setSeatsLeft((people - 1));
-                        String participants = post.getParticipants().concat("," + userEmail);
-                        post.setParticipants(participants);
+                        String p = post.getParticipants().concat("," + userEmail);
+                        post.setParticipants(p);
                         eventRef.setValue(post);
                         plus.setVisibility(View.GONE);
+                        participants.setText("Left: " + post.getSeatsLeft().toString());
                     }
                 });
             } else

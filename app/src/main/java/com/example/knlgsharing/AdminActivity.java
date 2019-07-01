@@ -38,6 +38,7 @@ public class AdminActivity extends AppCompatActivity implements EventsAdapter.On
     ArrayList<Post> events;
     Boolean isSearch = false;
     SearchView search;
+    EventsAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -193,23 +194,23 @@ public class AdminActivity extends AppCompatActivity implements EventsAdapter.On
                     results.add(object);
                 }
             }
-
         setRecyclerView(results);
     }
 
     @Override
     public void ItemClick(final int position) {
 
+
         if(selector.equals("Normal")) {
             Log.d("DEBUGG CLICK", "" + position);
 
             Intent intent = new Intent(AdminActivity.this, EventActivity.class);
             Bundle bundle = new Bundle();
-            bundle.putSerializable("position", events.get(position));
+            bundle.putSerializable("position", adapter.getArray().get(position));
 
             intent.putExtras(bundle);
 
-            Log.d("DEBUGGG", events.get(position).getEmailModerator());
+            Log.d("DEBUGGG", adapter.getArray().get(position).getEmailModerator());
 
             startActivity(intent);
         }
@@ -272,7 +273,7 @@ public class AdminActivity extends AppCompatActivity implements EventsAdapter.On
 
     private void setRecyclerView(ArrayList<Post> arrayList)
     {
-        EventsAdapter adapter = new EventsAdapter(getApplicationContext(), arrayList, this);
+        adapter = new EventsAdapter(getApplicationContext(), arrayList, this);
         mPosts.setAdapter(adapter);
     }
 

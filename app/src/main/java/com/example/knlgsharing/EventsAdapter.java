@@ -53,4 +53,9 @@ public class EventsAdapter extends RecyclerView.Adapter<PostViewHolder>
         void ItemClick(int position);
     }
 
+    public ArrayList<Post> getArray()
+    {
+        return events;
+    }
+
 }
