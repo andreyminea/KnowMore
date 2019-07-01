@@ -2,6 +2,7 @@ package com.example.knlgsharing;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -24,10 +25,26 @@ public class AddActivity extends AppCompatActivity {
     TextInputEditText date;
     TextInputEditText time;
 
+    Post post;
+    DatabaseReference ref;
+    private boolean haveData = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add);
+
+        //bundle.putSerializable("dates", post);
+        //bundle.putString("ref", eventRef.toString());
+        Intent intent = getIntent();
+        Bundle bundle = intent.getExtras();
+        if(!bundle.isEmpty())
+        {
+            post = (Post) bundle.getSerializable("dates");
+            ref = FirebaseDatabase.getInstance().getReferenceFromUrl((String) bundle.get("ref"));
+            Log.d("DEBUGG" , "I got " + ref.toString());
+            haveData = true;
+        }
 
         title = findViewById(R.id.field_title);
         moderator = findViewById(R.id.field_moderator_name);
@@ -61,6 +78,18 @@ public class AddActivity extends AppCompatActivity {
             }
         });
 
+        if(haveData)
+        {
+            title.setText(post.getTitle());
+            moderator.setText(post.getModerator());
+            emailModerator.setText(post.getEmailModerator());
+            description.setText(post.getDescription());
+            image.setText(post.getImage());
+            seats.setText(post.getSeatsLeft().toString());
+            date.setText(post.getDay());
+            time.setText(post.getTime());
+        }
+
     }
 
     private void sendData()
@@ -80,8 +109,16 @@ public class AddActivity extends AppCompatActivity {
                 emailModerator.getText().toString(),
                 "");
 
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Global").child("Posts");
+        if(haveData)
+        {
+            post.setParticipants(this.post.getParticipants().toString());
+            DatabaseReference Sref = FirebaseDatabase.getInstance().getReference().child("Global").child("Posts");
+            Sref.child(ref.getKey()).setValue(post);
+        }
+        else {
+            DatabaseReference Sref = FirebaseDatabase.getInstance().getReference().child("Global").child("Posts");
 
-        ref.child(post.getTitle()+post.getModerator()).setValue(post);
+            Sref.child(post.getTitle() + post.getModerator()).setValue(post);
+        }
     }
 }

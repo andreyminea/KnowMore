@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -37,6 +39,9 @@ public class EventActivity extends AppCompatActivity {
     MaterialButton back;
     MaterialButton plus;
 
+    ImageButton sendComment;
+    EditText textComment;
+
     DatabaseReference commentRef;
     DatabaseReference ref;
     DatabaseReference eventRef;
@@ -65,9 +70,10 @@ public class EventActivity extends AppCompatActivity {
         image = findViewById(R.id.eventImage);
         back = findViewById(R.id.back_btn);
         plus = findViewById(R.id.plus_btn);
+        sendComment = findViewById(R.id.sendComment);
+        textComment = findViewById(R.id.newComment);
 
         recyclerView = findViewById(R.id.comment_section);
-
 
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
@@ -89,7 +95,17 @@ public class EventActivity extends AppCompatActivity {
         } else
             image.setVisibility(View.GONE);
 
-        Log.d("DEBUGG", "" + post.getDay());
+
+        sendComment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ref = commentRef.child("Coms");
+                String send = textComment.getText().toString();
+                String key = ref.push().getKey();
+                ref.child(key).child("question").setValue(send);
+                ref.child(key).child("name").setValue(FirebaseAuth.getInstance().getCurrentUser().getDisplayName());
+            }
+        });
 
         ref = FirebaseDatabase.getInstance().getReference().child("Global/Posts");
         ref.addValueEventListener(new ValueEventListener() {
@@ -175,9 +191,6 @@ public class EventActivity extends AppCompatActivity {
                 break;
             }
         }
-        Log.d("DEBUGG", "moderator "+post.getEmailModerator());
-        Log.d("DEBUGG", "admin "+adminEmail);
-        Log.d("DEBUGG", "user "+userEmail);
 
         if (userEmail.equals(post.getEmailModerator()) || userEmail.equals(adminEmail)) {
             plus.setText("Edit");
@@ -224,29 +237,30 @@ public class EventActivity extends AppCompatActivity {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(linearLayoutManager);
 
-        CommentAdapter adapter = new CommentAdapter(list, name, getApplicationContext());
-        Log.d("DEBUGG", "" + adapter.getItemCount());
+        CommentAdapter adapter = new CommentAdapter(list, name, getApplicationContext(),
+                FirebaseAuth.getInstance().getCurrentUser().getDisplayName(), commentRef);
         recyclerView.setAdapter(adapter);
     }
 
 
-    private void getComments(DatabaseReference ref) {
+    private void getComments(final DatabaseReference ref) {
         final ArrayList<Comment> results = new ArrayList<>();
 
-        ref.addValueEventListener(new ValueEventListener() {
+        ref.child("Coms").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
-
-                    String name = dataSnapshot.child("name").getValue(String.class);
-                    String q = dataSnapshot.child("question").getValue(String.class);
-                    ArrayList<Answer> answers = new ArrayList<>();
-                    for (DataSnapshot ds : dataSnapshot.child("Answers").getChildren()) {
-                        Answer a = ds.getValue(Answer.class);
-                        answers.add(a);
+                    for(DataSnapshot ds: dataSnapshot.getChildren()) {
+                        String name = ds.child("name").getValue(String.class);
+                        String q = ds.child("question").getValue(String.class);
+                        ArrayList<Answer> answers = new ArrayList<>();
+                        for (DataSnapshot ids : ds.child("Answer").getChildren()) {
+                            Answer a = ids.getValue(Answer.class);
+                            answers.add(a);
+                        }
+                        Comment c = new Comment(name, q, answers, ref.child("Coms"));
+                        results.add(c);
                     }
-                    Comment c = new Comment(name, q, answers);
-                    results.add(c);
 
                 }
                 setEverything(results);
@@ -258,4 +272,5 @@ public class EventActivity extends AppCompatActivity {
             }
         });
     }
+
 }
