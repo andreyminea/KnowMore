@@ -43,6 +43,7 @@ public class MainActivity extends AppCompatActivity implements EventsAdapter.OnI
     Toolbar toolbar;
     Boolean isSearch = false;
     Boolean isPrevEvents = false;
+    Boolean isActive =false;
 
     String selector = "Normal";
 
@@ -69,6 +70,26 @@ public class MainActivity extends AppCompatActivity implements EventsAdapter.OnI
                     showPrevEvents(AllEvents);
                 } else {
                     isPrevEvents = false;
+                    onStart();
+                }
+
+            }
+        });
+
+        FloatingActionButton active = findViewById(R.id.action_active);
+
+        active.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // display user events
+                message("User Events");
+                if (!isActive) {
+                    message("Show User Events");
+                    isActive = true;
+                    showUserEvents(events);
+                } else {
+                    message("Don't show USER EVENTS");
+                    isActive = false;
                     onStart();
                 }
 
@@ -117,6 +138,8 @@ public class MainActivity extends AppCompatActivity implements EventsAdapter.OnI
         mPost.setLayoutManager(linearLayoutManager);
 
     }
+
+
 
     @Override
     protected void onStart() {
@@ -176,6 +199,27 @@ public class MainActivity extends AppCompatActivity implements EventsAdapter.OnI
         }
 
 
+    }
+
+    private void showUserEvents(ArrayList<Post> activeEvents)
+    {
+        ArrayList<Post> results = new ArrayList<>();
+        String currentEmail = FirebaseAuth.getInstance().getCurrentUser().getEmail();
+        message(""+activeEvents.size());
+        for (Post object : activeEvents) {
+            String[] emails;
+            emails = object.getParticipants().split(",");
+            message("//////////////////////////");
+            for (String s : emails) {
+                message(s);
+                if (currentEmail.equals(s)) {
+                    results.add(object);
+                }
+            }
+
+        }
+
+        setRecyclerView(results);
     }
 
     private void showPrevEvents(ArrayList<Post> ev) {

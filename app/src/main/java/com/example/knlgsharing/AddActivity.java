@@ -39,12 +39,18 @@ public class AddActivity extends AppCompatActivity {
         //bundle.putString("ref", eventRef.toString());
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
-        if(!bundle.isEmpty())
+        try {
+
+            if (bundle.isEmpty() == true) {
+                post = (Post) bundle.getSerializable("dates");
+                ref = FirebaseDatabase.getInstance().getReferenceFromUrl((String) bundle.get("ref"));
+                Log.d("DEBUGG", "I got " + ref.toString());
+                haveData = true;
+            }
+        }
+        catch (NullPointerException e)
         {
-            post = (Post) bundle.getSerializable("dates");
-            ref = FirebaseDatabase.getInstance().getReferenceFromUrl((String) bundle.get("ref"));
-            Log.d("DEBUGG" , "I got " + ref.toString());
-            haveData = true;
+
         }
 
         title = findViewById(R.id.field_title);

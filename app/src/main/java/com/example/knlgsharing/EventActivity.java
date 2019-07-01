@@ -189,6 +189,7 @@ public class EventActivity extends AppCompatActivity {
                 } else {
                     Intent intent = new Intent(EventActivity.this, AdminActivity.class);
                     startActivity(intent);
+                    finish();
                 }
             }
         });

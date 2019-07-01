@@ -62,7 +62,7 @@ public class SignActivity extends AppCompatActivity {
             startActivityForResult(
                     AuthUI.getInstance()
                             .createSignInIntentBuilder()
-                            .setIsSmartLockEnabled(true)
+                            .setIsSmartLockEnabled(false)
                             .setAvailableProviders(providers)
                             .build(),
                     RC_SIGN_IN);
