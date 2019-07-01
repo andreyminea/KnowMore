@@ -105,11 +105,12 @@ public class EventActivity extends AppCompatActivity {
         sendComment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ref = commentRef.child("Coms");
+                DatabaseReference aux = commentRef;
                 String send = textComment.getText().toString();
-                String key = ref.push().getKey();
-                ref.child(key).child("question").setValue(send);
-                ref.child(key).child("name").setValue(FirebaseAuth.getInstance().getCurrentUser().getDisplayName());
+                String key = aux.push().getKey();
+                aux.child(key).child("question").setValue(send);
+                aux.child(key).child("name").setValue(FirebaseAuth.getInstance().getCurrentUser().getDisplayName());
+                textComment.setText("");
             }
         });
 
@@ -136,13 +137,12 @@ public class EventActivity extends AppCompatActivity {
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists())
-                    for (DataSnapshot ds : dataSnapshot.getChildren())
-                        if (ds.getKey().equals(eventRef.getKey())) {
-                            commentRef = ds.getRef();
-                            getComments(commentRef);
-                            break;
-                        }
+                if (dataSnapshot.exists()) {
+
+                    commentRef = ref.child(eventRef.getKey());
+                    Log.d("DEBUGG", "Comment REFERENCE " + commentRef.toString());
+                    getComments(commentRef);
+                }
             }
 
             @Override
@@ -262,7 +262,7 @@ public class EventActivity extends AppCompatActivity {
     private void getComments(final DatabaseReference ref) {
         final ArrayList<Comment> results = new ArrayList<>();
 
-        ref.child("Coms").addValueEventListener(new ValueEventListener() {
+        ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {

@@ -64,7 +64,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentViewHolder>
 
                 Log.d("DEBUGG","^^" + postRef.toString());
 
-                postRef.child("Coms").addListenerForSingleValueEvent(new ValueEventListener() {
+                postRef.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         for (DataSnapshot ds : dataSnapshot.getChildren()) {
