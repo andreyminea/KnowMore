@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.tasks.OnCanceledListener;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.database.DatabaseReference;
@@ -20,6 +21,7 @@ import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.Random;
 
 public class AddActivity extends AppCompatActivity {
 
@@ -129,7 +131,7 @@ public class AddActivity extends AppCompatActivity {
                 link.getText().toString());
 
         if(checkDate(post)) {
-            sendIt();
+            sendIt(post);
 
         }
         else
@@ -138,19 +140,25 @@ public class AddActivity extends AppCompatActivity {
         }
     }
 
-    private void sendIt()
+    private void sendIt(Post p)
     {
         if (haveData) {
             post.setParticipants(this.post.getParticipants().toString());
             DatabaseReference Sref = FirebaseDatabase.getInstance().getReference().child("Global").child("Posts");
-            Sref.child(ref.getKey()).setValue(post);
+            Sref.child(ref.getKey().toString()).setValue(p);
             Intent intent = new Intent(AddActivity.this, AdminActivity.class);
             startActivity(intent);
             finish();
         } else {
             DatabaseReference Sref = FirebaseDatabase.getInstance().getReference().child("Global").child("Posts");
-            String key = Sref.push().getKey();
-            Sref.child(key).setValue(post);
+
+            Random rand = new Random();
+            int n = rand.nextInt(50);
+            n += 1;
+
+            String key = "Post" + n;
+            Log.d("DEBUGG", Sref.child(key).toString());
+            Sref.child(key).setValue(p);
             Intent intent = new Intent(AddActivity.this, AdminActivity.class);
             startActivity(intent);
             finish();
