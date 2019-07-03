@@ -131,8 +131,8 @@ public class MainActivity extends AppCompatActivity implements EventsAdapter.OnI
         linearLayoutManager = new LinearLayoutManager(this);
 
         // the last is displayed first
-        linearLayoutManager.setReverseLayout(true);
-        linearLayoutManager.setStackFromEnd(true);
+        linearLayoutManager.setReverseLayout(false);
+        linearLayoutManager.setStackFromEnd(false);
         mPost.setHasFixedSize(true);
 
         mPost.setLayoutManager(linearLayoutManager);

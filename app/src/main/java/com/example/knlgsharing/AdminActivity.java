@@ -223,10 +223,13 @@ public class AdminActivity extends AppCompatActivity implements EventsAdapter.On
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     int j = 0;
+                    final ArrayList<Post> newArray = adapter.getArray();
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                        Log.d("DEBUGG","HEI sterge te" + position);
-                        if (position == j) {
-                            Log.d("DEBUGG",snapshot.toString());
+                        Post aux = snapshot.getValue(Post.class);
+                        if(aux.equalsPost(newArray.get(position)))
+                        {
+                            //Log.d("DEBUGG","HEI sterge te" + position);
+                            //Log.d("DEBUGG",snapshot.toString());
                             snapshot.getRef().removeValue();
                             break;
                         }
