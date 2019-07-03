@@ -149,8 +149,8 @@ public class AddActivity extends AppCompatActivity {
             finish();
         } else {
             DatabaseReference Sref = FirebaseDatabase.getInstance().getReference().child("Global").child("Posts");
-
-            Sref.child(post.getTitle() + post.getModerator()).setValue(post);
+            String key = Sref.push().getKey();
+            Sref.child(key).setValue(post);
             Intent intent = new Intent(AddActivity.this, AdminActivity.class);
             startActivity(intent);
             finish();
