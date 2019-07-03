@@ -170,15 +170,21 @@ public class EventActivity extends AppCompatActivity {
 
             }
         });
+        if(post.getLink().isEmpty())
+        {
+            link.setVisibility(View.GONE);
+        }
+        else {
 
-        link.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Uri uri = Uri.parse(post.getLink());
-                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-                startActivity(intent);
-            }
-        });
+            link.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Uri uri = Uri.parse(post.getLink());
+                    Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                    startActivity(intent);
+                }
+            });
+        }
 
         back.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -153,7 +153,7 @@ public class AddActivity extends AppCompatActivity {
             DatabaseReference Sref = FirebaseDatabase.getInstance().getReference().child("Global").child("Posts");
 
             Random rand = new Random();
-            int n = rand.nextInt(50);
+            int n = rand.nextInt(10000);
             n += 1;
 
             String key = "Post" + n;
